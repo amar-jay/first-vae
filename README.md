@@ -5,7 +5,7 @@ on the first try I used lightning AI, then moved to colab. The access the colab 
   Oh and btw, pytorch_lightning is used for training. if you don't want this overhead you can create yours 😂
 
 #### Current Issues:
-  - Vanishing and exploding gradients. [checkout this](./vae-testing).  The gradient distribution across activations are insane. Perhaps, next time I will try SwiGLU and see how it does. 
+  - Vanishing and exploding gradients. [checkout this](./vae-testing.ipynb).  The gradient distribution across activations are insane. Perhaps, next time I will try SwiGLU and see how it does. 
   - As I said yesterday, After training, it resulted in a lot of deed neuron outputs
     ![download (1)](https://github.com/user-attachments/assets/76141c38-d495-486b-8aca-bf899d43ffa5)
     ![download](https://github.com/user-attachments/assets/f44a68e8-4536-4a8f-b09d-128626cfd0e4)
