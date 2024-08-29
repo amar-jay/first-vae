@@ -1,5 +1,5 @@
 ### dldajlsdl;akjdl
-on the first try I used lightning AI, then moved to colab. The access the colab from ![here](https://colab.research.google.com/drive/1L0DMB9CTxzYv4OeLLo5oL2w_JWOudNkT#scrollTo=0i_lAzieoj24).
+on the first try I used lightning AI, then moved to colab. The access the colab from [here](https://colab.research.google.com/drive/1L0DMB9CTxzYv4OeLLo5oL2w_JWOudNkT#scrollTo=0i_lAzieoj24).
 ### Current Status:
   Ive implemented a VAE model for image upscaling. However not trained yet. The main reason is to understand how VAE works in general.
   Oh and btw, pytorch_lightning is used for training. if you don't want this overhead you can create yours 😂
