@@ -4,7 +4,6 @@ import pytorch_lightning as L
 import torch
 from model import SuperResolutionVAEModel, SuperResolutionVAEConfig
 from torchmetrics.image import PeakSignalNoiseRatio, StructuralSimilarityIndexMeasure
-from gpt_dataset import get_dataloader
 from pytorch_lightning.callbacks import ModelCheckpoint
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -17,8 +16,8 @@ class LitSuperResolutionVAE(L.LightningModule):
         self.model = SuperResolutionVAEModel(config)
         self.psnr_metric = PeakSignalNoiseRatio()
         self.ssim_metric = StructuralSimilarityIndexMeasure()
-    def forward(self, x, target):
-        return self.model(x, target) # forward step -> meant for inference only
+    def forward(self, x, targets=None):
+        return self.model(x, targets) # forward step -> meant for inference only
 
 
 
@@ -80,8 +79,8 @@ def upscale_image(model, lr_image):
     model.eval()
     with torch.no_grad():
         lr_image = lr_image.unsqueeze(0)  # Add batch dimension
-        recon_image, loss = model(lr_image)
-        return recon_image.squeeze(0), loss  # Remove batch dimension
+        recon_image = model(lr_image)
+        return recon_image.squeeze(0)  # Remove batch dimension
 
 
 # Define the checkpoint callback
@@ -95,23 +94,22 @@ checkpoint_callback = ModelCheckpoint(
 
 if __name__ == "__main__":
     import numpy as np
+    from gpt_dataset import get_dataloader
 
 
 
     _type = input("train / inference, yes if training (y/N): ")
+    train_dset, val_dset, test_dset = get_dataloader()
     if _type == "y":
         lit_model = LitSuperResolutionVAE()
         trainer = L.Trainer(max_epochs=2, callbacks=[checkpoint_callback])
-        train_dset, val_dset, test_dset = get_dataloader()
         trainer.fit(lit_model, train_dataloaders=train_dset, val_dataloaders=val_dset)
 
         trainer.test(lit_model, test_dset)
 
     else:
-        version = int(input("(NOTE: saves only the best version)\nversion no: "))
-        model = LitSuperResolutionVAE.load_from_checkpoint(f"lightning_logs/version_{version}/checkpoints/checkpoint.ckpt")
+        model = LitSuperResolutionVAE.load_from_checkpoint(f"checkpoint.ckpt")
         model.eval()
-        _, _, test_dset = get_dataloader()
 
         # Perform inference with the loaded model
         
@@ -126,7 +124,8 @@ if __name__ == "__main__":
             raise ValueError("Image name already exists")
 
         lr_image, hr_image = test_dset.dataset[sample_idx]
-        upscaled_image,loss = upscale_image(model, lr_image)
+        upscaled_image = upscale_image(model, lr_image)
+        print(upscaled_image.shape)
 
         # Convert the upscaled image to a format that can be saved
         upscaled_image = upscaled_image.permute(1, 2, 0).cpu().numpy()  # Convert to HWC format and numpy array

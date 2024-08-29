@@ -36,6 +36,7 @@ class SuperResolutionVAEModel(nn.Module):
             norm1 = nn.BatchNorm2d(config.n_embd),
             conv0 = nn.ConvTranspose2d(config.n_embd, config.rgb_channels, kernel_size=3, stride=2, padding=1, output_padding=1)
         ))
+        self.testing = False
         if config.testing:
             self.testing = True
             self.activations = {}
